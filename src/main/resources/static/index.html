@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script type="text/javascript">
+    function query() {
+        $.ajax({
+            //几个参数需要注意一下
+            type: "GET",//方法类型
+            // dataType: "json",//预期服务器返回的数据类型
+            url: "/drug" ,//url
+            data: $('#form1').serialize(),
+            success: function (result) {
+                console.log(result);//打印服务端返回的数据(调试用)
+                if (result.resultCode == 200) {
+                    alert("SUCCESS");
+                }
+                ;
+            },
+            error : function() {
+                alert("异常！");
+            }
+        });
+    }
+</script>
+</head>
+<div id="form-div">
+    <form id="form1" onsubmit="return false" action="##" method="get">
+        <p>疾病名：<input name="disease" type="text" id="txtUserName" tabindex="1" size="15" value=""/></p>
+        <p><input type="button" value="登录" onclick="query()"></p>
+    </form>
+    <form action="/drug" target="_blank" method="get">
+        <input type="text">
+        <input type="submit" name="查询">
+    </form>
+</div>
+</html>
