@@ -1,13 +1,18 @@
 package com.hrhrng.drugforecast.openapi;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hrhrng.drugforecast.common.FileUtil;
 import com.hrhrng.drugforecast.common.jsonobject.Ids;
 import com.hrhrng.drugforecast.common.jsonobject.JsonRootBean;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.springframework.core.io.Resource;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,14 +64,20 @@ public class GDCApi {
          *  方案1：存入对象
          *  方案2：写入文件中，供脚本
          */
-//        File file = new File("./data/{disease}/meta.json".replace("{disease}",disease));
-//
-//        // 存在,直接返回结果
-//        if (file.exists()) {
-//            return Optional.empty();
-//        }
-//
-//        file.createNewFile();
+        File file = new File("D:/forest/data/{disease}".replace("{disease}",disease));
+
+        // 存在,直接返回结果,查询结果
+        if (file.exists()) {
+            return Optional.empty();
+        }
+
+        file.mkdir();
+
+        File file1 = new File(file, "meta.json");
+
+
+        file1.createNewFile();
+
 
         StringBuffer sb = new StringBuffer();
         sb.append(FILES_URL);
@@ -80,18 +91,37 @@ public class GDCApi {
 
         List<String> idList = result.getData().getHits().stream().map(i->i.getId()).collect(Collectors.toList());
 
+        // count tumor and normal
+        result.getData().getHits().stream().map(i->{
+            String submitter_id = i.getAssociated_entities().get(0).getEntity_submitter_id();
+            String[] ss = submitter_id.split("_");
+            if (ss[3].startsWith("0")) return "0";                    // tumor
+            else return "1";                                          // normal
+        });
 
         String meta = objectMapper.writeValueAsString(result);
 
-//        FileWriter fw = new FileWriter("./data/{disease}/meta.json");
 
-        downLoadFiles(idList);
-//        fw.write(meta);
 
-        return Optional.of(idList);
+        FileWriter fw = new FileWriter(file1);
+
+
+        fw.write(meta);
+        fw.close();
+//
+        downLoadFiles(idList, disease);
+
+        // 移动文件
+        FileUtil fileUtil = new FileUtil();
+        fileUtil.moveFile(disease);
+
+        //
+
+
+        return Optional.empty();
     }
 
-    void downLoadFiles (List<String> ids) throws JsonProcessingException {
+    void downLoadFiles (List<String> ids, String disease) throws IOException {
 
         // 下载至 ~/data/{disease}/data 中
 
@@ -102,9 +132,46 @@ public class GDCApi {
         // ids 构造 json
         String body = objectMapper.writeValueAsString(ids1);
         // 发起 POST 请求
+        HttpHeaders headers = new HttpHeaders();//创建请求头对象
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);//设置请求头，多个头则通过add一个一个添加
+        HttpEntity<String> entity = new HttpEntity<String>(body, headers);//将请求头传入请求体种
+        ResponseEntity<Resource> in = restTemplate.exchange(DATA_URl, HttpMethod.POST, entity, Resource.class);
 
-        // 下载文件
+        try (InputStream is = in.getBody().getInputStream();)
+        {//java9新特性try升级 自动关闭流
+            extractTarGZ(is, "D:/forest/data/disease/data/".replace("disease", disease));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
+    // 更加通用的解压方式
+    public void extractTarGZ(InputStream in, String targetDir) throws IOException {
+        // tar.gz -> tar
+        try (
+                GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(in);
+                TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn)
+        ) {
+
+            TarArchiveEntry entry;
+
+            while ((entry = (TarArchiveEntry) tarIn.getNextEntry()) != null) {
+
+                if (entry.isDirectory()) {
+                    continue;
+                }
+
+                File outputFile = new File(targetDir + entry.getName());
+
+                if (!outputFile.getParentFile().exists()) {
+                    outputFile.getParentFile().mkdirs();
+                }
+
+                try (FileOutputStream fos = new FileOutputStream(outputFile)) {
+                    tarIn.transferTo(fos);
+                }
+            }
+        }
     }
 
     /**
@@ -120,6 +187,8 @@ public class GDCApi {
     public static void main(String[] args) throws IOException {
         GDCApi api = new GDCApi();
         api.getFilesMetaDate("TCGA-OV");
+
+
     }
 
 }
