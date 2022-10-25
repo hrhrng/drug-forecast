@@ -5,6 +5,11 @@ import java.io.File;
 public class FileUtil {
 
 
+    public static String getRandomFileName(String disease) {
+        File dir = new File("D:/forest/data/disease/allFiles/".replace("disease", disease));
+        File[] files = dir.listFiles();
+        return files[0].getName();
+    }
 
     public boolean deleteFile(File dirFile) {
         // 如果dir对应的文件不存在，则退出

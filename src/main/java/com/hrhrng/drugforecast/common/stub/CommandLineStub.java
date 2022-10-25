@@ -22,7 +22,7 @@ public class CommandLineStub {
 
 
     public static List<String> exec(String command) throws IOException, InterruptedException {
-        Process process = runtime.exec("ipconfig");
+        Process process = runtime.exec(command);
         InputStream input = process.getInputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(input));
         String szline;
@@ -37,7 +37,7 @@ public class CommandLineStub {
     }
 
     public static List<String> execWithUtil(String command) throws IOException, InterruptedException {
-        return exec(baseUrl + command);
+        return exec(command.replace("{dir}",baseUrl));
     }
 }
 
