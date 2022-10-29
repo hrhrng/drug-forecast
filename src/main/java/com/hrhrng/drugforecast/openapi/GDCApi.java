@@ -91,17 +91,20 @@ public class GDCApi {
 
         List<String> idList = result.getData().getHits().stream().map(i->i.getId()).collect(Collectors.toList());
 
+        int[] ddd = new int[2];
+
         // count tumor and normal
-        result.getData().getHits().stream().map(i->{
+        result.getData().getHits().stream().forEach(i->{
             String submitter_id = i.getAssociated_entities().get(0).getEntity_submitter_id();
-            String[] ss = submitter_id.split("_");
-            if (ss[3].startsWith("0")) return "0";                    // tumor
-            else return "1";                                          // normal
+//            System.out.println(submitter_id);
+            String[] ss = submitter_id.split("-");
+            if (ss[3].startsWith("0")) ddd[0]++;                    // tumor
+            else ddd[1]++;                                          // normal
         });
 
         String meta = objectMapper.writeValueAsString(result);
 
-
+        System.out.println(ddd[0]+" "+ddd[1]);
 
         FileWriter fw = new FileWriter(file1);
 
@@ -186,9 +189,7 @@ public class GDCApi {
 
     public static void main(String[] args) throws IOException {
         GDCApi api = new GDCApi();
-        api.getFilesMetaDate("TCGA-OV");
-
-
+        api.getFilesMetaDate("TCGA-BRCA");
     }
 
 }
