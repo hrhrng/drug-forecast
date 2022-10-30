@@ -98,7 +98,7 @@ public class FileUtil {
         deleteFile(new File("D:/forest/data/disease/mRNAmatrix_t.txt".replace("disease", disease)));
     }
 
-    public List<String> getDiffGene(String disease) throws IOException {
+    static public List<String> getDiffGene(String disease) throws IOException {
         File file = new File("D:\\forest\\data\\disease\\diff_genes.txt".replace("disease", disease));
         FileReader fileReader = new FileReader(file);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
