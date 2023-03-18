@@ -1,6 +1,6 @@
 package com.hrhrng.drugforecast.common.stub;
 
-import com.hrhrng.drugforecast.common.jsonobject.JsonRootBean;
+import com.hrhrng.drugforecast.common.jsonobject.gdc.JsonRootBean;
 import org.dom4j.DocumentException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

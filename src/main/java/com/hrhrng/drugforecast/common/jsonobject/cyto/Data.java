@@ -1,4 +1,4 @@
-package com.hrhrng.drugforecast.common.cyto;
+package com.hrhrng.drugforecast.common.jsonobject.cyto;
 
 public class Data {
 

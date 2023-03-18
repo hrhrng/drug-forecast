@@ -2,7 +2,7 @@ package com.hrhrng.drugforecast.openapi;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hrhrng.drugforecast.common.Enrichr.GetData;
+import com.hrhrng.drugforecast.common.jsonobject.Enrichr.GetData;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -48,7 +48,6 @@ public class EnrichrApi {
 
 
     public List<String> getResult(String userListId) throws JsonProcessingException {
-
 
         String re = restTemplate.getForObject(RESULT_URL.replace("{id}", userListId),String.class);
 

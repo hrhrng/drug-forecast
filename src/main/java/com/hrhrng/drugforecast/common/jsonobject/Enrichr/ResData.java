@@ -1,4 +1,4 @@
-package com.hrhrng.drugforecast.common.Enrichr;
+package com.hrhrng.drugforecast.common.jsonobject.Enrichr;
 
 /**
  * Copyright 2022 bejson.com

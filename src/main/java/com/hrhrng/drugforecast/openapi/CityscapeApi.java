@@ -2,7 +2,7 @@ package com.hrhrng.drugforecast.openapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hrhrng.drugforecast.common.FileUtil;
-import com.hrhrng.drugforecast.common.cyto.CytoData;
+import com.hrhrng.drugforecast.common.jsonobject.cyto.CytoData;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -151,6 +151,4 @@ public class CityscapeApi {
         CityscapeApi cityscapeApi = new CityscapeApi();
         cityscapeApi.mcodeCluster("TCGA-BRCA");
     }
-
-
 }

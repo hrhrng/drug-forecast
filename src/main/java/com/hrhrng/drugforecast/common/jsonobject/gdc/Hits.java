@@ -1,7 +1,7 @@
 /**
   * Copyright 2022 bejson.com 
   */
-package com.hrhrng.drugforecast.common.jsonobject;
+package com.hrhrng.drugforecast.common.jsonobject.gdc;
 
 import java.util.List;
 

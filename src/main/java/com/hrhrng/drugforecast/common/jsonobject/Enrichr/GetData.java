@@ -1,4 +1,4 @@
-package com.hrhrng.drugforecast.common.Enrichr;
+package com.hrhrng.drugforecast.common.jsonobject.Enrichr;
 
 public class GetData {
 

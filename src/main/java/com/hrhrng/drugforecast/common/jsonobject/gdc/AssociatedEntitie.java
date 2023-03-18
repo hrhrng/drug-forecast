@@ -1,4 +1,4 @@
-package com.hrhrng.drugforecast.common.jsonobject;
+package com.hrhrng.drugforecast.common.jsonobject.gdc;
 
 public class AssociatedEntitie {
 

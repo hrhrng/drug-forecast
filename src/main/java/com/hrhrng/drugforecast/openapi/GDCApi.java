@@ -2,8 +2,8 @@ package com.hrhrng.drugforecast.openapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hrhrng.drugforecast.common.FileUtil;
-import com.hrhrng.drugforecast.common.jsonobject.Ids;
-import com.hrhrng.drugforecast.common.jsonobject.JsonRootBean;
+import com.hrhrng.drugforecast.common.jsonobject.gdc.Ids;
+import com.hrhrng.drugforecast.common.jsonobject.gdc.JsonRootBean;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -65,11 +65,6 @@ public class GDCApi {
          *  方案2：写入文件中，供脚本
          */
         File file = new File("D:/forest/data/{disease}".replace("{disease}",disease));
-
-        // 存在,直接返回结果,查询结果
-        if (file.exists()) {
-            return Optional.empty();
-        }
 
         file.mkdir();
 
@@ -135,13 +130,13 @@ public class GDCApi {
         // ids 构造 json
         String body = objectMapper.writeValueAsString(ids1);
         // 发起 POST 请求
-        HttpHeaders headers = new HttpHeaders();//创建请求头对象
-        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);//设置请求头，多个头则通过add一个一个添加
-        HttpEntity<String> entity = new HttpEntity<String>(body, headers);//将请求头传入请求体种
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        HttpEntity<String> entity = new HttpEntity<String>(body, headers);
         ResponseEntity<Resource> in = restTemplate.exchange(DATA_URl, HttpMethod.POST, entity, Resource.class);
 
         try (InputStream is = in.getBody().getInputStream();)
-        {//java9新特性try升级 自动关闭流
+        {
             extractTarGZ(is, "D:/forest/data/disease/data/".replace("disease", disease));
         } catch (IOException e) {
             e.printStackTrace();
