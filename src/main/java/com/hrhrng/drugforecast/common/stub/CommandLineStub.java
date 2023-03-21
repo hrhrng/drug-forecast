@@ -16,7 +16,7 @@ public class CommandLineStub {
     /**
      * 这个路径下存放脚本
      */
-    static String baseUrl = "D:/forest/util/";
+    static String baseUrl = "forest/util/";
 
     static Runtime runtime = Runtime.getRuntime();
 

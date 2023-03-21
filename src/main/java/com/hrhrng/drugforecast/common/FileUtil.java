@@ -9,7 +9,7 @@ public class FileUtil {
 
 
     public static String getRandomFileName(String disease) {
-        File dir = new File("D:/forest/data/disease/allFiles/".replace("disease", disease));
+        File dir = new File("forest/data/disease/allFiles/".replace("disease", disease));
         File[] files = dir.listFiles();
         return files[0].getName();
     }
@@ -32,12 +32,27 @@ public class FileUtil {
         return dirFile.delete();
     }
 
+    public static void writeToFile(File file, List<String> result) {
+        // write the result to a file
+        try {
+            FileWriter fw = new FileWriter(file);
+            BufferedWriter bw = new BufferedWriter(fw);
+            for (String str : result) {
+                bw.write(str);
+                bw.newLine();
+            }
+            bw.close();
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     public void moveFile(String disease) {
 
-        File dir = new File("D:/forest/data/disease/data".replace("disease", disease));
-        File dirNew = new File("D:/forest/data/disease/allFiles".replace("disease", disease));
+        File dir = new File("forest/data/disease/data".replace("disease", disease));
+        File dirNew = new File("forest/data/disease/allFiles".replace("disease", disease));
         dirNew.mkdir();
         File[] files = dir.listFiles();
         for (File file : files) {
@@ -47,7 +62,7 @@ public class FileUtil {
             }
             System.out.println(file.getName());
             File[] subs = file.listFiles();
-            subs[0].renameTo(new File("D:/forest/data/disease/allFiles/".replace("disease", disease)+subs[0].getName()));
+            subs[0].renameTo(new File("forest/data/disease/allFiles/".replace("disease", disease)+subs[0].getName()));
 
         }
         deleteFile(dir);
@@ -71,7 +86,7 @@ public class FileUtil {
     }
 
     public static void appendHead(String disease) throws IOException {
-        File file = new File("D:/forest/data/disease/mRNAmatrix.txt".replace("disease", disease));
+        File file = new File("forest/data/disease/mRNAmatrix.txt".replace("disease", disease));
 
 
         FileWriter fileWriter = new FileWriter(file);
@@ -88,18 +103,18 @@ public class FileUtil {
 
         FileChannel ch = randomAccessFile.getChannel();
 
-        RandomAccessFile file2 = new RandomAccessFile("D:/forest/data/disease/mRNAmatrix_t.txt".replace("disease", disease), "rw");
+        RandomAccessFile file2 = new RandomAccessFile("forest/data/disease/mRNAmatrix_t.txt".replace("disease", disease), "rw");
         FileChannel channel2 = file2.getChannel();
 
         ch.transferFrom(channel2, file.length(), file2.length());
         ch.close();
 
 
-        deleteFile(new File("D:/forest/data/disease/mRNAmatrix_t.txt".replace("disease", disease)));
+        deleteFile(new File("forest/data/disease/mRNAmatrix_t.txt".replace("disease", disease)));
     }
 
     static public List<String> getDiffGene(String disease) throws IOException {
-        File file = new File("D:\\forest\\data\\disease\\diff_genes.txt".replace("disease", disease));
+        File file = new File("forest\\data\\disease\\diff_genes.txt".replace("disease", disease));
         FileReader fileReader = new FileReader(file);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         String x;

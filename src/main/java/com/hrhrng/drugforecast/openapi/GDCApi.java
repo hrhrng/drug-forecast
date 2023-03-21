@@ -16,7 +16,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,17 +54,16 @@ public class GDCApi {
     String META_CONDITION = "&fields=associated_entities.entity_submitter_id,file_id,file_name&format=JSON&size=1000";
     String FILTER_BASE = "{\"op\":\"and\",\"content\":[{\"op\":\"in\",\"content\":{\"field\":\"cases.project.program.name\",\"value\":[\"TCGA\"]}},{\"op\":\"in\",\"content\":{\"field\":\"cases.project.project_id\",\"value\":[\"disease\"]}},{\"op\":\"in\",\"content\":{\"field\":\"files.data_category\",\"value\":[\"transcriptome profiling\"]}},{\"op\":\"in\",\"content\":{\"field\":\"files.data_type\",\"value\":[\"Gene Expression Quantification\"]}}]}";
     /**
-     *
      * @param disease 疾病
      * @return list of id
      */
-    Optional<List<String>> getFilesMetaDate (String disease) throws IOException {
+    public List<Integer> getFilesMetaDate(String disease) throws IOException {
 
         /** 调用 HTTP Client 的 get ，获取元数据
          *  方案1：存入对象
          *  方案2：写入文件中，供脚本
          */
-        File file = new File("D:/forest/data/{disease}".replace("{disease}",disease));
+        File file = new File("forest/data/{disease}".replace("{disease}",disease));
 
         file.mkdir();
 
@@ -86,20 +85,21 @@ public class GDCApi {
 
         List<String> idList = result.getData().getHits().stream().map(i->i.getId()).collect(Collectors.toList());
 
-        int[] ddd = new int[2];
 
+        AtomicInteger tumor = new AtomicInteger();
+        AtomicInteger normal = new AtomicInteger();
         // count tumor and normal
         result.getData().getHits().stream().forEach(i->{
             String submitter_id = i.getAssociated_entities().get(0).getEntity_submitter_id();
 //            System.out.println(submitter_id);
             String[] ss = submitter_id.split("-");
-            if (ss[3].startsWith("0")) ddd[0]++;                    // tumor
-            else ddd[1]++;                                          // normal
+            if (ss[3].startsWith("0")) tumor.getAndIncrement();                    // tumor
+            else normal.getAndIncrement();                                          // normal
         });
 
         String meta = objectMapper.writeValueAsString(result);
 
-        System.out.println(ddd[0]+" "+ddd[1]);
+        System.out.println(tumor+" "+normal);
 
         FileWriter fw = new FileWriter(file1);
 
@@ -116,7 +116,7 @@ public class GDCApi {
         //
 
 
-        return Optional.empty();
+        return List.of(tumor.get(), normal.get());
     }
 
     void downLoadFiles (List<String> ids, String disease) throws IOException {
@@ -137,7 +137,7 @@ public class GDCApi {
 
         try (InputStream is = in.getBody().getInputStream();)
         {
-            extractTarGZ(is, "D:/forest/data/disease/data/".replace("disease", disease));
+            extractTarGZ(is, "forest/data/disease/data/".replace("disease", disease));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -73,7 +73,7 @@ public class CityscapeApi {
         System.out.println(res.getBody());
     }
 
-    public void mcodeCluster(String disease) {
+    public List<String> mcodeCluster(String disease) {
 
         String body = "{\n" +
                 "  \"degreeCutoff\": \"2\",\n" +
@@ -87,9 +87,11 @@ public class CityscapeApi {
                 "  \"nodeScoreCutoff\": \"0.2\",\n" +
                 "  \"scope\": \"NETWORK\"\n" +
                 "}";
-        HttpHeaders headers = new HttpHeaders();//创建请求头对象
+        //创建请求头对象
+        HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-        HttpEntity<String> entity = new HttpEntity<String>(body, headers);//将请求头传入请求体种
+        //将请求头传入请求体种
+        HttpEntity<String> entity = new HttpEntity<String>(body, headers);
         ResponseEntity<String> res = restTemplate.exchange(MCODE_URL, HttpMethod.POST, entity, String.class);
         System.out.println(res.getBody());
         String r = res.getBody();
@@ -97,14 +99,13 @@ public class CityscapeApi {
         // 正则
         System.out.println(r);
 
-        List<List<String>> nodeLists = regEx("\\[[0-9,]+\\]", r).stream().map(i -> {
+        List<String> nodeLists = regEx("\\[[0-9,]+\\]", r).stream().map(i -> {
             String[] list = i.substring(1, i.length() - 1).split(",");
             return sGetNameById(Arrays.asList(list));
-        }).collect(Collectors.toList());
+        }).flatMap(i -> i.stream()).collect(Collectors.toList());
 
-
+        return nodeLists;
         // 热点基因
-        System.out.println(1);
         //
     }
 
